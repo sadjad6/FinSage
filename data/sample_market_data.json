@@ -1,0 +1,146 @@
+{
+  "market_indices": {
+    "S&P 500": {
+      "symbol": "^GSPC",
+      "price": 4890.25,
+      "change": 12.75,
+      "change_pct": 0.26,
+      "previous_close": 4877.50,
+      "open": 4879.22,
+      "high": 4895.40,
+      "low": 4875.15,
+      "volume": 3526000000
+    },
+    "Dow Jones": {
+      "symbol": "^DJI",
+      "price": 38596.98,
+      "change": -45.25,
+      "change_pct": -0.12,
+      "previous_close": 38642.23,
+      "open": 38640.15,
+      "high": 38725.34,
+      "low": 38550.67,
+      "volume": 324000000
+    },
+    "NASDAQ": {
+      "symbol": "^IXIC",
+      "price": 15645.75,
+      "change": 85.35,
+      "change_pct": 0.55,
+      "previous_close": 15560.40,
+      "open": 15565.82,
+      "high": 15680.24,
+      "low": 15545.12,
+      "volume": 4826000000
+    },
+    "Russell 2000": {
+      "symbol": "^RUT",
+      "price": 1978.45,
+      "change": 5.85,
+      "change_pct": 0.30,
+      "previous_close": 1972.60,
+      "open": 1973.20,
+      "high": 1982.15,
+      "low": 1970.34,
+      "volume": 1245000000
+    }
+  },
+  "sectors": {
+    "Technology": {
+      "change_pct": 0.65,
+      "leaders": ["NVDA", "MSFT", "AAPL"],
+      "laggards": ["IBM", "ORCL", "CSCO"]
+    },
+    "Healthcare": {
+      "change_pct": 0.25,
+      "leaders": ["PFE", "UNH", "JNJ"],
+      "laggards": ["MRK", "ABBV", "CVS"]
+    },
+    "Financials": {
+      "change_pct": -0.18,
+      "leaders": ["GS", "V", "MA"],
+      "laggards": ["JPM", "BAC", "WFC"]
+    },
+    "Consumer Discretionary": {
+      "change_pct": 0.40,
+      "leaders": ["AMZN", "TSLA", "HD"],
+      "laggards": ["MCD", "NKE", "SBUX"]
+    },
+    "Energy": {
+      "change_pct": -0.52,
+      "leaders": ["XOM", "CVX", "COP"],
+      "laggards": ["SLB", "OXY", "BP"]
+    }
+  },
+  "commodities": {
+    "Crude Oil": {
+      "symbol": "CL=F",
+      "price": 76.45,
+      "change": -1.25,
+      "change_pct": -1.61
+    },
+    "Gold": {
+      "symbol": "GC=F",
+      "price": 2375.80,
+      "change": 12.60,
+      "change_pct": 0.53
+    },
+    "Silver": {
+      "symbol": "SI=F",
+      "price": 28.75,
+      "change": 0.42,
+      "change_pct": 1.48
+    },
+    "Natural Gas": {
+      "symbol": "NG=F",
+      "price": 2.25,
+      "change": -0.05,
+      "change_pct": -2.17
+    }
+  },
+  "crypto": {
+    "Bitcoin": {
+      "symbol": "BTC-USD",
+      "price": 63245.75,
+      "change": 1435.50,
+      "change_pct": 2.32
+    },
+    "Ethereum": {
+      "symbol": "ETH-USD",
+      "price": 3485.25,
+      "change": 65.75,
+      "change_pct": 1.92
+    },
+    "Cardano": {
+      "symbol": "ADA-USD",
+      "price": 0.45,
+      "change": 0.02,
+      "change_pct": 4.65
+    }
+  },
+  "forex": {
+    "EUR/USD": {
+      "price": 1.0875,
+      "change": 0.0025,
+      "change_pct": 0.23
+    },
+    "USD/JPY": {
+      "price": 156.85,
+      "change": 0.45,
+      "change_pct": 0.29
+    },
+    "GBP/USD": {
+      "price": 1.2545,
+      "change": -0.0035,
+      "change_pct": -0.28
+    }
+  },
+  "economic_indicators": {
+    "Federal Funds Rate": "5.25%",
+    "10-Year Treasury Yield": "4.32%",
+    "Unemployment Rate": "3.8%",
+    "Inflation Rate (CPI)": "3.2%",
+    "GDP Growth Rate": "2.1%"
+  },
+  "last_updated": "2023-05-10T16:30:00Z"
+}
