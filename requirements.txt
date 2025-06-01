@@ -1,0 +1,51 @@
+# Core dependencies
+langchain>=0.1.0
+langgraph>=0.0.21
+gradio>=4.12.0
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+
+# Model and embedding
+transformers>=4.36.0
+sentence-transformers>=2.2.2
+torch>=2.1.0
+ollama>=0.1.5
+
+# Vector database
+qdrant-client>=1.6.0
+
+# Data processing and analysis
+pandas>=2.1.0
+numpy>=1.24.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+plotly>=5.18.0
+kaleido>=0.2.1  # For static plotly image export
+pillow>=10.0.0  # For image processing
+
+# Financial data APIs
+yfinance>=0.2.35
+pycoingecko>=3.1.0
+finnhub-python>=2.4.18
+newsapi-python>=0.2.7
+alphavantage-python>=2.4.0
+
+# Sentiment analysis
+nltk>=3.8.1
+textblob>=0.17.1
+scikit-learn>=1.3.0
+
+# Scheduling
+apscheduler>=3.10.1
+tzlocal>=5.0.1
+
+# Testing
+pytest>=7.3.1
+pytest-cov>=4.1.0
+flake8>=6.0.0
+
+# Utilities
+tqdm>=4.66.1
+requests>=2.31.0
+python-dateutil>=2.8.2
+colorama>=0.4.6  # For colored logging

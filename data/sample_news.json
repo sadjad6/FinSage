@@ -1,0 +1,135 @@
+{
+  "articles": {
+    "1_20230501120000": {
+      "article_id": "1_20230501120000",
+      "title": "Federal Reserve Signals Potential Rate Hike",
+      "url": "https://example.com/news/fed-rate-hike",
+      "source": "Financial Times",
+      "published_at": "2023-05-01T12:00:00Z",
+      "category": "economy",
+      "content": "The Federal Reserve has signaled it may raise interest rates at its next meeting, citing concerns about inflation and strong employment data. Analysts expect a 25 basis point increase.",
+      "description": "Fed officials hint at upcoming rate increase to combat inflation pressures",
+      "sentiment_score": -0.15,
+      "sentiment_label": "negative",
+      "tickers": ["SPY", "QQQ", "TLT"]
+    },
+    "2_20230502093000": {
+      "article_id": "2_20230502093000",
+      "title": "Apple Reports Record Quarterly Earnings",
+      "url": "https://example.com/news/apple-earnings",
+      "source": "Wall Street Journal",
+      "published_at": "2023-05-02T09:30:00Z",
+      "category": "company",
+      "content": "Apple Inc. reported record quarterly earnings, beating analyst expectations with $97.3 billion in revenue, up 9% year over year. iPhone sales remained strong despite supply chain challenges.",
+      "description": "Tech giant exceeds expectations with strong iPhone and services growth",
+      "sentiment_score": 0.65,
+      "sentiment_label": "positive",
+      "tickers": ["AAPL"]
+    },
+    "3_20230503140000": {
+      "article_id": "3_20230503140000",
+      "title": "Oil Prices Fall on Increased Supply Forecasts",
+      "url": "https://example.com/news/oil-prices-drop",
+      "source": "Bloomberg",
+      "published_at": "2023-05-03T14:00:00Z",
+      "category": "commodities",
+      "content": "Global oil prices fell by over 3% today after OPEC+ announced plans to increase production next month. The decision comes amid concerns about slowing global demand and economic uncertainties.",
+      "description": "Crude futures decline as OPEC+ plans production increase",
+      "sentiment_score": -0.35,
+      "sentiment_label": "negative",
+      "tickers": ["USO", "XOM", "CVX"]
+    },
+    "4_20230504110000": {
+      "article_id": "4_20230504110000",
+      "title": "Tesla Unveils New EV Battery Technology",
+      "url": "https://example.com/news/tesla-battery",
+      "source": "CNBC",
+      "published_at": "2023-05-04T11:00:00Z",
+      "category": "technology",
+      "content": "Tesla announced a breakthrough in battery technology that could extend range by 30% and reduce production costs. The company plans to implement the new batteries in vehicles starting next year.",
+      "description": "New battery tech promises longer range and lower costs for electric vehicles",
+      "sentiment_score": 0.75,
+      "sentiment_label": "positive",
+      "tickers": ["TSLA"]
+    },
+    "5_20230505153000": {
+      "article_id": "5_20230505153000",
+      "title": "Housing Market Shows Signs of Cooling",
+      "url": "https://example.com/news/housing-market",
+      "source": "Reuters",
+      "published_at": "2023-05-05T15:30:00Z",
+      "category": "real_estate",
+      "content": "The U.S. housing market is showing signs of cooling as mortgage rates rise and inventory increases. Home sales decreased 3.5% month-over-month, while the median home price growth slowed to 5.2% annually.",
+      "description": "Rising mortgage rates and increasing inventory lead to slowdown in home sales",
+      "sentiment_score": -0.20,
+      "sentiment_label": "negative",
+      "tickers": ["XHB", "ITB", "HD", "TOL"]
+    }
+  },
+  "market_sentiment": 0.14,
+  "previous_market_sentiment": 0.22,
+  "sentiment_trend": -0.08,
+  "category_sentiments": {
+    "economy": {
+      "category": "economy",
+      "sentiment_score": -0.15,
+      "sentiment_label": "negative",
+      "article_count": 1,
+      "last_updated": "2023-05-05T16:00:00Z"
+    },
+    "company": {
+      "category": "company",
+      "sentiment_score": 0.65,
+      "sentiment_label": "positive",
+      "article_count": 1,
+      "last_updated": "2023-05-05T16:00:00Z"
+    },
+    "commodities": {
+      "category": "commodities",
+      "sentiment_score": -0.35,
+      "sentiment_label": "negative",
+      "article_count": 1,
+      "last_updated": "2023-05-05T16:00:00Z"
+    },
+    "technology": {
+      "category": "technology",
+      "sentiment_score": 0.75,
+      "sentiment_label": "positive",
+      "article_count": 1,
+      "last_updated": "2023-05-05T16:00:00Z"
+    },
+    "real_estate": {
+      "category": "real_estate",
+      "sentiment_score": -0.20,
+      "sentiment_label": "negative",
+      "article_count": 1,
+      "last_updated": "2023-05-05T16:00:00Z"
+    }
+  },
+  "ticker_sentiments": {
+    "AAPL": {
+      "ticker": "AAPL",
+      "company_name": "Apple Inc.",
+      "sentiment_score": 0.65,
+      "sentiment_label": "positive",
+      "article_count": 1,
+      "last_updated": "2023-05-05T16:00:00Z"
+    },
+    "TSLA": {
+      "ticker": "TSLA",
+      "company_name": "Tesla, Inc.",
+      "sentiment_score": 0.75,
+      "sentiment_label": "positive",
+      "article_count": 1,
+      "last_updated": "2023-05-05T16:00:00Z"
+    },
+    "SPY": {
+      "ticker": "SPY",
+      "company_name": "SPDR S&P 500 ETF Trust",
+      "sentiment_score": -0.15,
+      "sentiment_label": "negative",
+      "article_count": 1,
+      "last_updated": "2023-05-05T16:00:00Z"
+    }
+  }
+}

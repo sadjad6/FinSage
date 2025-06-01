@@ -1,0 +1,128 @@
+{
+  "user_id": "sample_user_001",
+  "personal_info": {
+    "name": "Alex Johnson",
+    "age": 35,
+    "occupation": "Software Engineer",
+    "annual_income": 120000,
+    "tax_bracket": "24%",
+    "marital_status": "Married",
+    "dependents": 1,
+    "location": {
+      "country": "United States",
+      "state": "California",
+      "city": "San Francisco"
+    },
+    "retirement_age": 65
+  },
+  "financial_profile": {
+    "net_worth": 425000,
+    "liquid_assets": 75000,
+    "debt": {
+      "student_loans": 15000,
+      "mortgage": 450000,
+      "credit_card": 2500,
+      "auto_loan": 18000,
+      "other": 0
+    },
+    "monthly_expenses": 6500,
+    "monthly_savings": 2000,
+    "emergency_fund": 35000,
+    "retirement_accounts": {
+      "401k": {
+        "balance": 185000,
+        "contribution_rate": 8,
+        "employer_match": 4
+      },
+      "ira": {
+        "type": "Roth",
+        "balance": 65000,
+        "annual_contribution": 6000
+      }
+    },
+    "investments": {
+      "brokerage_accounts": 354750.25,
+      "real_estate": 650000,
+      "other": 25000
+    }
+  },
+  "risk_profile": {
+    "risk_tolerance": "Moderate",
+    "risk_score": 7,
+    "investment_horizon": "Long-term",
+    "loss_tolerance": "Medium",
+    "risk_questionnaire": {
+      "q1": "If my portfolio lost 20% in a month, I would: Hold and wait for recovery",
+      "q2": "I prefer investments that: Provide a balance of growth and stability",
+      "q3": "My primary investment goal is: Building wealth over time with moderate risk"
+    }
+  },
+  "financial_goals": [
+    {
+      "id": "goal_001",
+      "name": "Retirement",
+      "description": "Save for comfortable retirement at age 65",
+      "target_amount": 2500000,
+      "target_date": "2053-01-01",
+      "current_amount": 250000,
+      "priority": "High",
+      "monthly_contribution": 1500,
+      "expected_return_rate": 7.0,
+      "progress_pct": 10
+    },
+    {
+      "id": "goal_002",
+      "name": "College Fund",
+      "description": "Save for child's college education",
+      "target_amount": 180000,
+      "target_date": "2040-09-01",
+      "current_amount": 25000,
+      "priority": "Medium",
+      "monthly_contribution": 350,
+      "expected_return_rate": 6.0,
+      "progress_pct": 13.9
+    },
+    {
+      "id": "goal_003",
+      "name": "Home Renovation",
+      "description": "Kitchen and bathroom remodel",
+      "target_amount": 75000,
+      "target_date": "2026-06-01",
+      "current_amount": 15000,
+      "priority": "Medium",
+      "monthly_contribution": 1200,
+      "expected_return_rate": 2.0,
+      "progress_pct": 20
+    }
+  ],
+  "preferences": {
+    "investment_preferences": {
+      "preferred_assets": ["ETFs", "Index Funds", "Stocks", "Bonds"],
+      "excluded_sectors": ["Tobacco", "Gambling"],
+      "esg_focus": "Moderate",
+      "dividend_preference": "Growth and Income",
+      "tax_efficiency": "Important"
+    },
+    "communication_preferences": {
+      "frequency": "Weekly",
+      "channels": ["Email", "App"],
+      "alert_types": ["Portfolio Changes", "Market Events", "Goal Progress"]
+    },
+    "automation_preferences": {
+      "auto_rebalancing": true,
+      "dividend_reinvestment": true,
+      "tax_loss_harvesting": true
+    }
+  },
+  "financial_knowledge": {
+    "investment_knowledge": "Intermediate",
+    "financial_literacy_score": 7,
+    "education_topics_interest": [
+      "Tax Optimization",
+      "Retirement Planning",
+      "Estate Planning",
+      "Alternative Investments"
+    ]
+  },
+  "last_updated": "2023-05-15T14:30:00Z"
+}
