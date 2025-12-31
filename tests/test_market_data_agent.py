@@ -131,12 +131,16 @@ def sample_market_data():
 @pytest.fixture
 def mock_agent(sample_market_data):
     """Fixture to create a mock market data agent with mocked dependencies."""
-    with patch("agents.market_data_agent.MCP", autospec=True) as mock_mcp, \
+    with patch("agents.market_data_agent.get_registry", autospec=True) as mock_get_registry, \
          patch("agents.market_data_agent.os.path.exists", return_value=True), \
          patch("builtins.open", mock_open(read_data=json.dumps(sample_market_data))), \
          patch("json.load", return_value=sample_market_data), \
          patch("agents.market_data_agent.ChatOllama") as mock_chat, \
          patch("agents.market_data_agent.YFinanceClient") as mock_yfin:
+        
+        # Mock registry
+        mock_registry = MagicMock()
+        mock_get_registry.return_value = mock_registry
         
         # Set up mock for YFinance client
         mock_yfin_instance = MagicMock()
@@ -154,15 +158,13 @@ def mock_agent(sample_market_data):
             }
         }
         
-        # Create the agent with mocked dependencies
-        agent = MarketDataAgent()
-        
         # Set up the agent context
         mock_context = MagicMock()
-        mock_mcp.context.return_value = mock_context
-        mock_context.__enter__.return_value = mock_context
-        mock_context.setdefault.return_value = sample_market_data
-        mock_context.__exit__.return_value = None
+        mock_registry.get_latest_context.return_value = mock_context
+        mock_context.content = sample_market_data
+        
+        # Create the agent with mocked dependencies
+        agent = MarketDataAgent()
         
         yield agent
 

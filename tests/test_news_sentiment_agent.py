@@ -23,10 +23,15 @@ def sample_news_data():
 @pytest.fixture
 def mock_agent():
     """Fixture to create a mock news sentiment agent with mocked dependencies."""
-    with patch("agents.news_sentiment_agent.MCP", autospec=True) as mock_mcp:
+    with patch("agents.news_sentiment_agent.get_registry", autospec=True) as mock_get_registry, \
+         patch("agents.news_sentiment_agent.ChatOllama") as mock_chat:
+        # Mock registry
+        mock_registry = MagicMock()
+        mock_get_registry.return_value = mock_registry
+        
         # Mock context to return sample data
         mock_context = MagicMock()
-        mock_mcp.get_or_create_context.return_value = mock_context
+        mock_registry.get_latest_context.return_value = mock_context
         
         # Mock news client
         mock_news_client = MagicMock()

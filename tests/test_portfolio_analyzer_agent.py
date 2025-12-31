@@ -97,11 +97,15 @@ def sample_portfolio_data():
 @pytest.fixture
 def mock_agent(sample_portfolio_data):
     """Fixture to create a mock portfolio analyzer agent with mocked dependencies."""
-    with patch("agents.portfolio_analyzer_agent.MCP", autospec=True) as mock_mcp, \
+    with patch("agents.portfolio_analyzer_agent.get_registry", autospec=True) as mock_get_registry, \
          patch("agents.portfolio_analyzer_agent.os.path.exists", return_value=True), \
          patch("builtins.open", mock_open(read_data=json.dumps(sample_portfolio_data))), \
          patch("json.load", return_value=sample_portfolio_data), \
          patch("agents.portfolio_analyzer_agent.ChatOllama") as mock_chat:
+        
+        # Mock registry
+        mock_registry = MagicMock()
+        mock_get_registry.return_value = mock_registry
         
         # Create a mock for the visualization utility
         mock_visualizer = MagicMock()
@@ -111,10 +115,8 @@ def mock_agent(sample_portfolio_data):
         
         # Set up the agent context
         mock_context = MagicMock()
-        mock_mcp.context.return_value = mock_context
-        mock_context.__enter__.return_value = mock_context
-        mock_context.setdefault.return_value = sample_portfolio_data
-        mock_context.__exit__.return_value = None
+        mock_registry.get_latest_context.return_value = mock_context
+        mock_context.content = sample_portfolio_data
         
         yield agent
 

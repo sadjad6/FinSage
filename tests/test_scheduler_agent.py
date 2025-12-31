@@ -44,7 +44,12 @@ def mock_agents():
 @pytest.fixture
 def mock_agent(mock_agents):
     """Fixture to create a mock scheduler agent with mocked dependencies."""
-    with patch("agents.scheduler_agent.MCP", autospec=True) as mock_mcp:
+    with patch("agents.scheduler_agent.get_registry", autospec=True) as mock_get_registry, \
+         patch("agents.scheduler_agent.ChatOllama") as mock_chat:
+        # Mock registry
+        mock_registry = MagicMock()
+        mock_get_registry.return_value = mock_registry
+        
         # Create the agent with mocked agents
         scheduler = SchedulerAgent(
             market_data_agent=mock_agents["market_data_agent"],
