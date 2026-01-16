@@ -114,23 +114,59 @@ The repository includes sample data files for testing and demonstration:
 
 ## 🧪 Testing
 
-FinSage includes comprehensive tests for all agents:
+FinSage includes comprehensive unit tests for all agents.
+
+### Running Tests
 
 ```bash
 # Run all tests
 pytest
 
+# Run tests with verbose output
+pytest -v
+
+# Run a specific test file
+pytest tests/test_compliance_agent.py
+
 # Run tests with coverage report
 pytest --cov=agents --cov=utils --cov=contexts
+
+# Run a specific test case
+pytest tests/test_compliance_agent.py::TestComplianceAgent::test_initialization
 ```
 
-Test modules include:
-- `tests/test_financial_planner_agent.py`
-- `tests/test_compliance_agent.py`
-- `tests/test_news_sentiment_agent.py`
-- `tests/test_scheduler_agent.py`
-- `tests/test_portfolio_analyzer_agent.py`
-- `tests/test_market_data_agent.py`
+### Test Structure
+
+Each agent has a corresponding test module:
+
+| Agent | Test File |
+|-------|-----------|
+| FinancialPlannerAgent | `tests/test_financial_planner_agent.py` |
+| ComplianceAgent | `tests/test_compliance_agent.py` |
+| NewsSentimentAgent | `tests/test_news_sentiment_agent.py` |
+| SchedulerAgent | `tests/test_scheduler_agent.py` |
+| PortfolioAnalyzerAgent | `tests/test_portfolio_analyzer_agent.py` |
+| MarketDataAgent | `tests/test_market_data_agent.py` |
+
+### Mocking Strategy
+
+Tests use `unittest.mock` to mock external dependencies:
+
+- **`get_registry`**: Mocked to provide a controlled context registry for testing agent tools
+- **`ChatOllama`**: Mocked to avoid requiring a running Ollama instance during tests
+- **API Clients**: External API clients (e.g., `YFinanceClient`, `NewsAPIClient`) are mocked to provide predictable test data
+
+Example fixture pattern:
+```python
+@pytest.fixture
+def mock_agent():
+    with patch("agents.compliance_agent.get_registry") as mock_get_registry, \
+         patch("agents.compliance_agent.ChatOllama") as mock_chat:
+        mock_registry = MagicMock()
+        mock_get_registry.return_value = mock_registry
+        agent = ComplianceAgent()
+        yield agent
+```
 
 ## 🔄 CI/CD
 
