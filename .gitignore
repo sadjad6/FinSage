@@ -143,3 +143,4 @@ models/
 # Temporary files
 temp/
 tmp/
+test_output.txt
