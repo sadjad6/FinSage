@@ -42,7 +42,7 @@ FinSage implements a multi-agent architecture using LangChain and LangGraph with
    # API Keys
    FINNHUB_API_KEY=your_finnhub_api_key
    NEWS_API_KEY=your_newsapi_key
-   ALPHAVANTAGE_API_KEY=your_alphavantage_api_key
+
    
    # Application Settings
    LOG_LEVEL=INFO
