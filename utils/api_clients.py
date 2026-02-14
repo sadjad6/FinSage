@@ -359,3 +359,28 @@ class FinancialDataClient:
         except Exception as e:
             logger.error(f"Error fetching company info for {symbol}: {e}")
             return {}
+
+class NewsAPIClient:
+    """Class for fetching news from NewsAPI"""
+    
+    def __init__(self):
+        self.client = FinancialDataClient()
+    
+    def get_news(self, query: str = "", category: str = "business", limit: int = 10) -> List[Dict[str, Any]]:
+        """Fetch news articles"""
+        return self.client.get_financial_news(query=query, category=category, limit=limit)
+    
+    def get_news_for_query(self, query: str = "", category: str = "business", max_results: int = 10) -> List[Dict[str, Any]]:
+        """Fetch news articles (alias for get_news as used in some tests)"""
+        return self.get_news(query=query, category=category, limit=max_results)
+
+class YFinanceClient:
+    """Class for fetching data from Yahoo Finance"""
+    
+    def __init__(self):
+        self.client = FinancialDataClient()
+    
+    def get_ticker_info(self, symbol: str) -> Dict[str, Any]:
+        """Fetch ticker information"""
+        ticker = yf.Ticker(symbol)
+        return ticker.info
