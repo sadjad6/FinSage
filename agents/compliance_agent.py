@@ -323,9 +323,9 @@ Consult with a tax professional regarding your specific situation before making 
             # Common factual issues to check for
             factual_checks = [
                 {
-                    "pattern": r"guarantee.*\s(return|profit|income)",
-                    "issue": "Claims of guaranteed returns",
-                    "correction": "Investment returns cannot be guaranteed"
+                    "pattern": r"guarantee.*\s(return|profit|income|money|gain|double|triple)",
+                    "issue": "Claims of guaranteed returns or performance",
+                    "correction": "Investment outcomes cannot be guaranteed"
                 },
                 {
                     "pattern": r"(always|never|certainly|definitely|guaranteed to)\s(increase|decrease|rise|fall|grow)",

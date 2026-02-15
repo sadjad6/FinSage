@@ -6,6 +6,7 @@ ETFs, cryptocurrencies, and other market data using various public APIs.
 """
 
 import logging
+import os
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Union, Tuple
 

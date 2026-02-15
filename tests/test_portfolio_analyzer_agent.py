@@ -242,14 +242,14 @@ class TestPortfolioAnalyzerAgent:
     def test_run_method(self, mock_chat_ollama, mock_agent):
         """Test the run method processes queries correctly."""
         # Setup the mock executor to return a response
-        mock_agent.agent_executor.run.return_value = "Portfolio analysis complete"
+        mock_agent.agent_executor.invoke.return_value = {"output": "Portfolio analysis complete"}
         
         # Call the run method
         result = mock_agent.run("Analyze my portfolio diversification")
         
         # Verify the executor was called with the query
-        mock_agent.agent_executor.run.assert_called_once_with(
-            input="Analyze my portfolio diversification"
+        mock_agent.agent_executor.invoke.assert_called_once_with(
+            {"input": "Analyze my portfolio diversification"}
         )
         
         # Verify the result is what we expect

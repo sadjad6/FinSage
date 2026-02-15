@@ -300,14 +300,14 @@ class TestMarketDataAgent:
     def test_run_method(self, mock_chat_ollama, mock_agent):
         """Test the run method processes queries correctly."""
         # Setup the mock executor to return a response
-        mock_agent.agent_executor.run.return_value = "Market data summary generated"
+        mock_agent.agent_executor.invoke.return_value = {"output": "Market data summary generated"}
         
         # Call the run method
         result = mock_agent.run("Give me a summary of today's market")
         
         # Verify the executor was called with the query
-        mock_agent.agent_executor.run.assert_called_once_with(
-            input="Give me a summary of today's market"
+        mock_agent.agent_executor.invoke.assert_called_once_with(
+            {"input": "Give me a summary of today's market"}
         )
         
         # Verify the result is what we expect

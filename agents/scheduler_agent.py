@@ -9,6 +9,7 @@ import logging
 import time
 from datetime import datetime, timedelta, timezone
 from threading import Thread, Event
+from apscheduler.schedulers.background import BackgroundScheduler
 from typing import Dict, List, Optional, Any, Union, Tuple, Callable
 
 from langchain.agents import AgentExecutor
@@ -61,12 +62,18 @@ class SchedulerAgent:
         self.scheduled_tasks = {}
         self.stop_event = Event()
         self.scheduler_thread = None
+        self.scheduler = BackgroundScheduler()
         
         # Set up tools for the agent
         self.tools = self._create_tools()
         
         # Set up the agent executor
         self.agent_executor = self._create_agent_executor()
+    
+    @property
+    def is_running(self) -> bool:
+        """Check if the scheduler is running"""
+        return self.scheduler.running if self.scheduler else False
     
     def _create_agent_executor(self) -> AgentExecutor:
         """Create the agent executor with tools and prompt"""

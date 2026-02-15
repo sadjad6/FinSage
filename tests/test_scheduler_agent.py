@@ -76,7 +76,7 @@ class TestSchedulerAgent:
     def test_schedule_daily_update(self, mock_agent, mock_agents):
         """Test the schedule_daily_update tool."""
         # Call the tool
-        result = mock_agent._create_tools()[0]("16:30")
+        result = mock_agent._create_tools()[0](hour=16, minute=30)
         
         # Verify the scheduler was called
         assert len(mock_agent.scheduler.get_jobs()) > 0
@@ -182,14 +182,14 @@ class TestSchedulerAgent:
     def test_run_method(self, mock_chat_ollama, mock_agent):
         """Test the run method processes queries correctly."""
         # Setup the mock executor to return a response
-        mock_agent.agent_executor.run.return_value = "Task scheduled successfully"
+        mock_agent.agent_executor.invoke.return_value = {"output": "Task scheduled successfully"}
         
         # Call the run method
         result = mock_agent.run("Schedule a daily update at 5:00 PM")
         
         # Verify the executor was called with the query
-        mock_agent.agent_executor.run.assert_called_once_with(
-            input="Schedule a daily update at 5:00 PM"
+        mock_agent.agent_executor.invoke.assert_called_once_with(
+            {"input": "Schedule a daily update at 5:00 PM"}
         )
         
         # Verify the result is what we expect

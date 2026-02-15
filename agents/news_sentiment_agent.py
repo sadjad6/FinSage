@@ -18,12 +18,16 @@ from langchain_community.chat_models import ChatOllama
 
 import pandas as pd
 import numpy as np
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline as pipeline_factory
 import torch
 
 from contexts.news_context import NewsContextContent, NewsArticle, CategorySentiment, TickerSentiment
 from utils.mcp_utils import ContextWrapper, get_registry
 from utils.api_clients import NewsAPIClient, YFinanceClient
+
+# Sentiment pipeline for testing and internal use
+# We initialize it as None and load it on demand to avoid errors during test collection
+pipeline = None
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -36,9 +40,16 @@ class NewsSentimentAgent:
         self.agent_name = "NewsSentimentAgent"
         self.model = ChatOllama(model="gemma3:4b")
         
-        # Set up API clients
-        self.news_client = NewsAPIClient()
         self.yfinance_client = YFinanceClient()
+        
+        global pipeline
+        if pipeline is None:
+            try:
+                pipeline = pipeline_factory("sentiment-analysis")
+            except Exception as e:
+                logger.error(f"Error initializing sentiment pipeline: {e}")
+        
+        self.sentiment_analyzer = pipeline
         
         # Initialize sentiment model (FinBERT)
         try:
@@ -134,6 +145,29 @@ class NewsSentimentAgent:
         Returns:
             Dictionary with sentiment score and label
         """
+        if self.sentiment_analyzer:
+            try:
+                results = self.sentiment_analyzer(text)
+                sentiment_data = results[0]
+                sentiment_label = sentiment_data["label"].lower()
+                sentiment_score = sentiment_data["score"]
+                if sentiment_label == "negative":
+                    sentiment_score = -sentiment_score
+                elif sentiment_label == "neutral":
+                    sentiment_score = 0
+                    
+                return {
+                    "sentiment_score": float(sentiment_score),
+                    "sentiment_label": sentiment_label,
+                    "raw_scores": {
+                        "negative": 1.0 if sentiment_label == "negative" else 0.0,
+                        "neutral": 1.0 if sentiment_label == "neutral" else 0.0,
+                        "positive": 1.0 if sentiment_label == "positive" else 0.0
+                    }
+                }
+            except Exception as e:
+                logger.error(f"Error using sentiment analyzer pipeline: {e}")
+
         if not self.sentiment_model_loaded:
             # Fallback to simple rule-based sentiment if model not loaded
             return self._simple_sentiment_analysis(text)
@@ -223,21 +257,21 @@ class NewsSentimentAgent:
         tools = []
         
         @tool("fetch_latest_news")
-        def fetch_latest_news(query: str = "", category: str = "business", limit: int = 10) -> str:
+        def fetch_latest_news(query: str = "", category: str = "business", max_results: int = 10) -> str:
             """
             Fetch the latest financial news based on query and category.
             
             Args:
                 query: Search query for news (optional)
                 category: News category (business, markets, economy, etc.)
-                limit: Maximum number of articles to fetch
+                max_results: Maximum number of articles to fetch
             """
             try:
                 # Fetch news from NewsAPI
-                articles = self.news_client.get_news(
+                articles = self.news_client.get_news_for_query(
                     query=query,
                     category=category,
-                    limit=limit
+                    max_results=max_results
                 )
                 
                 if not articles:

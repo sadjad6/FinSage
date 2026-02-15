@@ -113,14 +113,14 @@ class TestNewsSentimentAgent:
     def test_run_method(self, mock_chat_ollama, mock_agent):
         """Test the run method processes queries correctly."""
         # Setup the mock executor to return a response
-        mock_agent.agent_executor.run.return_value = "News sentiment analysis completed"
+        mock_agent.agent_executor.invoke.return_value = {"output": "News sentiment analysis completed"}
         
         # Call the run method
         result = mock_agent.run("What's the sentiment around Tesla stock?")
         
         # Verify the executor was called with the query
-        mock_agent.agent_executor.run.assert_called_once_with(
-            input="What's the sentiment around Tesla stock?"
+        mock_agent.agent_executor.invoke.assert_called_once_with(
+            {"input": "What's the sentiment around Tesla stock?"}
         )
         
         # Verify the result is what we expect
