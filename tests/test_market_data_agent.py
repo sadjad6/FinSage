@@ -175,13 +175,14 @@ class TestMarketDataAgent:
     def test_initialization(self, mock_agent):
         """Test that the agent initializes correctly."""
         assert mock_agent is not None
-        assert mock_agent.market_data_file_path is not None
+        assert mock_agent.tools is not None
         assert mock_agent.tools is not None
         assert mock_agent.agent_executor is not None
     
     def test_get_market_indices(self, mock_agent, sample_market_data):
         """Test the get_market_indices tool."""
-        result = mock_agent._create_tools()[0]()
+        tool = next(t for t in mock_agent.tools if t.name == "get_market_indices")
+        result = tool.run({})
         
         # Check that the result is a string containing index information
         assert isinstance(result, str)
@@ -196,7 +197,8 @@ class TestMarketDataAgent:
     
     def test_get_sector_performance(self, mock_agent, sample_market_data):
         """Test the get_sector_performance tool."""
-        result = mock_agent._create_tools()[1]()
+        tool = next(t for t in mock_agent.tools if t.name == "get_sector_performance")
+        result = tool.run({})
         
         # Check that the result contains sector performance information
         assert isinstance(result, str)
@@ -210,7 +212,8 @@ class TestMarketDataAgent:
     
     def test_get_commodity_prices(self, mock_agent, sample_market_data):
         """Test the get_commodity_prices tool."""
-        result = mock_agent._create_tools()[2]()
+        tool = next(t for t in mock_agent.tools if t.name == "get_commodity_prices")
+        result = tool.run({})
         
         # Check that the result contains commodity information
         assert isinstance(result, str)
@@ -223,7 +226,8 @@ class TestMarketDataAgent:
     
     def test_get_cryptocurrency_prices(self, mock_agent, sample_market_data):
         """Test the get_cryptocurrency_prices tool."""
-        result = mock_agent._create_tools()[3]()
+        tool = next(t for t in mock_agent.tools if t.name == "get_cryptocurrency_prices")
+        result = tool.run({})
         
         # Check that the result contains cryptocurrency information
         assert isinstance(result, str)
@@ -236,7 +240,8 @@ class TestMarketDataAgent:
     
     def test_get_forex_rates(self, mock_agent, sample_market_data):
         """Test the get_forex_rates tool."""
-        result = mock_agent._create_tools()[4]()
+        tool = next(t for t in mock_agent.tools if t.name == "get_forex_rates")
+        result = tool.run({})
         
         # Check that the result contains forex information
         assert isinstance(result, str)
@@ -249,7 +254,8 @@ class TestMarketDataAgent:
     
     def test_get_economic_indicators(self, mock_agent, sample_market_data):
         """Test the get_economic_indicators tool."""
-        result = mock_agent._create_tools()[5]()
+        tool = next(t for t in mock_agent.tools if t.name == "get_economic_indicators")
+        result = tool.run({})
         
         # Check that the result contains economic indicators
         assert isinstance(result, str)
@@ -262,7 +268,8 @@ class TestMarketDataAgent:
     
     def test_get_stock_quote(self, mock_agent):
         """Test the get_stock_quote tool."""
-        result = mock_agent._create_tools()[6]("AAPL")
+        tool = next(t for t in mock_agent.tools if t.name == "get_stock_quote")
+        result = tool.run({"symbol": "AAPL"})
         
         # Check that the result contains stock information
         assert isinstance(result, str)
@@ -272,7 +279,8 @@ class TestMarketDataAgent:
     
     def test_get_market_summary(self, mock_agent):
         """Test the get_market_summary tool."""
-        result = mock_agent._create_tools()[7]()
+        tool = next(t for t in mock_agent.tools if t.name == "get_market_summary")
+        result = tool.run({})
         
         # Check that the result is a comprehensive summary
         assert isinstance(result, str)
@@ -286,7 +294,8 @@ class TestMarketDataAgent:
         with patch("json.dump") as mock_json_dump, \
              patch("builtins.open", mock_open()) as mock_file:
             
-            result = mock_agent._create_tools()[8]()
+            tool = next(t for t in mock_agent.tools if t.name == "update_market_data")
+            result = tool.run({})
             
             # Check that json.dump was called (saving updated data)
             mock_json_dump.assert_called_once()

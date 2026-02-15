@@ -120,7 +120,8 @@ class TestSchedulerAgent:
         assert len(mock_agent.scheduler.get_jobs()) == 1
         
         # Call the tool
-        result = mock_agent._create_tools()[2]("test_job")
+        tool = next(t for t in mock_agent.tools if t.name == "cancel_scheduled_task")
+        result = tool.run({"task_id": "test_job"})
         
         # Verify the job was removed
         assert len(mock_agent.scheduler.get_jobs()) == 0
@@ -133,7 +134,9 @@ class TestSchedulerAgent:
         """Test the start_scheduler tool."""
         # Call the tool
         with patch.object(mock_agent.scheduler, 'start') as mock_start:
-            result = mock_agent._create_tools()[3]()
+            # Call the tool
+            tool = next(t for t in mock_agent.tools if t.name == "start_scheduler")
+            result = tool.run({})
             
             # Verify the scheduler was started
             mock_start.assert_called_once()
@@ -151,7 +154,9 @@ class TestSchedulerAgent:
         
         # Call the tool
         with patch.object(mock_agent.scheduler, 'shutdown') as mock_shutdown:
-            result = mock_agent._create_tools()[4]()
+            # Call the tool
+            tool = next(t for t in mock_agent.tools if t.name == "stop_scheduler")
+            result = tool.run({})
             
             # Verify the scheduler was stopped
             mock_shutdown.assert_called_once()
@@ -165,7 +170,8 @@ class TestSchedulerAgent:
     def test_generate_daily_summary(self, mock_agent, mock_agents):
         """Test the generate_daily_summary tool."""
         # Call the tool
-        result = mock_agent._create_tools()[5]()
+        tool = next(t for t in mock_agent.tools if t.name == "generate_daily_summary")
+        result = tool.run({})
         
         # Verify each agent was called
         mock_agents["market_data_agent"].run.assert_called_once()

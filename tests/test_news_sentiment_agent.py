@@ -68,7 +68,8 @@ class TestNewsSentimentAgent:
         ]
         
         # Call the tool
-        result = mock_agent._create_tools()[0]("tesla", "company", 1)
+        tool = next(t for t in mock_agent.tools if t.name == "fetch_latest_news")
+        result = tool.run({"query": "tesla", "category": "company", "max_results": 1})
         
         # Verify the news client was called
         mock_agent.news_client.get_news_for_query.assert_called_once_with(
@@ -85,7 +86,8 @@ class TestNewsSentimentAgent:
         mock_agent.sentiment_analyzer.return_value = [{"label": "positive", "score": 0.75}]
         
         # Call the tool
-        result = mock_agent._create_tools()[1]("Tesla announced record quarterly earnings today.")
+        tool = next(t for t in mock_agent.tools if t.name == "analyze_news_sentiment")
+        result = tool.run({"text": "Tesla announced record quarterly earnings today."})
         
         # Verify the sentiment analyzer was called
         mock_agent.sentiment_analyzer.assert_called_once()
@@ -100,7 +102,8 @@ class TestNewsSentimentAgent:
         mock_agent.news_context.get.return_value = sample_news_data
         
         # Call the tool
-        result = mock_agent._create_tools()[2]()
+        tool = next(t for t in mock_agent.tools if t.name == "get_market_sentiment_summary")
+        result = tool.run({})
         
         # Verify the context was accessed
         mock_agent.news_context.get.assert_called_once()

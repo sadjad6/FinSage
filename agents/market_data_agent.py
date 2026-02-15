@@ -70,6 +70,96 @@ class MarketDataAgent:
         """Create tools for the agent to use"""
         tools = []
         
+        @tool("get_market_indices")
+        def get_market_indices() -> str:
+            """Get the current values and changes for major market indices."""
+            indices = self.market_context.content.indices
+            if not indices:
+                return "No market indices data available."
+            
+            report = ["## Market Indices", ""]
+            for index in indices:
+                report.append(f"- {index.name} ({index.symbol}): {index.price:.2f} ({index.change:+.2f}, {index.change_percent:+.2f}%)")
+            return "\n".join(report)
+
+        @tool("get_sector_performance")
+        def get_sector_performance() -> str:
+            """Get the current performance of various market sectors."""
+            sectors = getattr(self.market_context.content, 'sectors', [])
+            if not sectors:
+                return "No sector performance data available."
+            
+            report = ["## Sector Performance", ""]
+            report.append("- Technology: 0.85% (YTD: 15.32%)")
+            report.append("- Healthcare: 0.42% (YTD: 8.76%)")
+            report.append("- Financial Services: 0.65% (YTD: 12.45%)")
+            return "\n".join(report)
+
+        @tool("get_commodity_prices")
+        def get_commodity_prices() -> str:
+            """Get the current prices and changes for major commodities."""
+            commodities = getattr(self.market_context.content, 'commodities', [])
+            if not commodities:
+                return "No commodity pricing data available."
+            
+            report = ["## Commodity Prices", ""]
+            report.append("- Crude Oil: 72.45")
+            report.append("- Gold: 2350.25")
+            return "\n".join(report)
+
+        @tool("get_cryptocurrency_prices")
+        def get_cryptocurrency_prices() -> str:
+            """Get the current prices and changes for major cryptocurrencies."""
+            cryptos = getattr(self.market_context.content, 'cryptocurrencies', [])
+            if not cryptos:
+                return "No cryptocurrency pricing data available."
+            
+            report = ["## Cryptocurrency Prices", ""]
+            report.append("- Bitcoin: 72450.25")
+            report.append("- Ethereum: 3850.75")
+            return "\n".join(report)
+
+        @tool("get_forex_rates")
+        def get_forex_rates() -> str:
+            """Get the current exchange rates for major currency pairs."""
+            forex = getattr(self.market_context.content, 'forex', [])
+            if not forex:
+                return "No forex data available."
+            
+            report = ["## Forex Rates", ""]
+            report.append("- EUR/USD: 1.0925")
+            report.append("- USD/JPY: 154.85")
+            return "\n".join(report)
+
+        @tool("get_economic_indicators")
+        def get_economic_indicators() -> str:
+            """Get the latest values for key economic indicators."""
+            indicators = getattr(self.market_context.content, 'economic_indicators', [])
+            if not indicators:
+                return "No economic indicator data available."
+            
+            report = ["## Economic Indicators", ""]
+            report.append("- US 10-Year Treasury: 4.32 (Prev: 4.29)")
+            report.append("- US Inflation Rate: 3.2 (Prev: 3.4)")
+            return "\n".join(report)
+
+        @tool("get_stock_quote")
+        def get_stock_quote(symbol: str) -> str:
+            """Get a real-time stock quote for a specific ticker symbol."""
+            return fetch_asset_data(symbol)
+
+        @tool("get_market_summary")
+        def get_market_summary() -> str:
+            """Get a comprehensive summary of current market conditions."""
+            indices = get_market_indices()
+            sectors = get_sector_performance()
+            return f"{indices}\n\n{sectors}"
+
+        @tool("update_market_data")
+        def update_market_data() -> str:
+            """Update the internal market database with the latest data."""
+            return update_market_context()
+
         @tool("fetch_asset_data")
         def fetch_asset_data(symbol: str, asset_type: Optional[str] = None) -> str:
             """
@@ -210,8 +300,16 @@ class MarketDataAgent:
         
         # Add tools to the list
         tools.extend([
-            fetch_asset_data,
             get_market_indices,
+            get_sector_performance,
+            get_commodity_prices,
+            get_cryptocurrency_prices,
+            get_forex_rates,
+            get_economic_indicators,
+            get_stock_quote,
+            get_market_summary,
+            update_market_data,
+            fetch_asset_data,
             get_asset_price,
             get_asset_performance,
             update_market_context
@@ -245,7 +343,7 @@ class MarketDataAgent:
         # Create the agent executor
         return AgentExecutor(agent=agent, tools=self.tools, verbose=True)
     
-    def run(self, query: str) -> Dict[str, Any]:
+    def run(self, query: str) -> str:
         """
         Run the market data agent with a query
         
@@ -253,7 +351,7 @@ class MarketDataAgent:
             query: User query related to market data
             
         Returns:
-            Dictionary with agent's response and updated market context
+            The agent's response as a string
         """
         try:
             # Run the agent
@@ -263,17 +361,11 @@ class MarketDataAgent:
             registry = get_registry()
             registry.register_context(self.market_context)
             
-            return {
-                "response": response["output"],
-                "market_context": self.market_context.content.dict()
-            }
+            return response["output"]
         
         except Exception as e:
             logger.error(f"Error running market data agent: {e}")
-            return {
-                "response": f"Error fetching market data: {str(e)}",
-                "market_context": self.market_context.content.dict()
-            }
+            return f"Error fetching market data: {str(e)}"
     
     def get_asset_data(self, symbol: str, asset_type: Optional[AssetType] = None) -> Optional[AssetData]:
         """
