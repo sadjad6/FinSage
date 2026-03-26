@@ -41,6 +41,7 @@ class NewsSentimentAgent:
         self.model = ChatOllama(model="gemma3:4b")
         
         self.yfinance_client = YFinanceClient()
+        self.news_client = NewsAPIClient()
         
         global pipeline
         if pipeline is None:
@@ -280,7 +281,7 @@ class NewsSentimentAgent:
                 # Format news report
                 report = [f"## Latest Financial News: {query if query else category.title()}", ""]
                 
-                for i, article in enumerate(articles[:limit], 1):
+                for i, article in enumerate(articles[:max_results], 1):
                     # Add article to news context
                     article_id = f"{i}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
                     
