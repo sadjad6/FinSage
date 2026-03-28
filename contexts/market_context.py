@@ -76,7 +76,7 @@ class MarketContextContent(BaseModel):
     """Content structure for market context"""
     last_updated: datetime = Field(default_factory=datetime.now)
     market_open: bool = True
-    trading_day: datetime = Field(default_factory=lambda: datetime.now().date())
+    trading_day: datetime = Field(default_factory=datetime.now)
     
     # Market indices
     indices: MarketIndices = Field(default_factory=MarketIndices)

@@ -14,6 +14,7 @@ from langchain.agents import AgentExecutor
 from langchain.agents.format_scratchpad import format_to_openai_function_messages
 from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
 from langchain.tools import BaseTool, StructuredTool, tool
+from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_community.chat_models import ChatOllama
@@ -336,7 +337,7 @@ class MarketDataAgent:
                 "agent_scratchpad": lambda x: format_to_openai_function_messages(x["intermediate_steps"]),
             }
             | prompt
-            | self.model.bind(functions=[tool.get_openai_function() for tool in self.tools])
+            | self.model.bind(functions=[convert_to_openai_function(tool) for tool in self.tools])
             | OpenAIFunctionsAgentOutputParser()
         )
         
