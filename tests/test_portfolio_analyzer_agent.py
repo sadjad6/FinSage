@@ -6,11 +6,10 @@ import sys
 import json
 import pytest
 from unittest.mock import patch, MagicMock, mock_open
-
-# Add the parent directory to the path so we can import the agents
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from datetime import datetime
 from agents.portfolio_analyzer_agent import PortfolioAnalyzerAgent
+from contexts.portfolio_context import PortfolioContextContent, AssetHolding, PortfolioMetrics
+from contexts.market_context import AssetType
 
 
 @pytest.fixture
@@ -116,7 +115,31 @@ def mock_agent(sample_portfolio_data):
         # Set up the agent context
         mock_context = MagicMock()
         mock_registry.get_latest_context.return_value = mock_context
-        mock_context.content = sample_portfolio_data
+        
+        # Transform sample data to match PortfolioContextContent model
+        holdings_dict = {}
+        for h in sample_portfolio_data.get("holdings", []):
+            symbol = h.get("ticker", "UNKNOWN")
+            holdings_dict[symbol] = AssetHolding(
+                symbol=symbol,
+                name=h.get("name", ""),
+                asset_type=AssetType.STOCK if h.get("asset_class") == "Equity" else AssetType.ETF,
+                quantity=h.get("quantity", 0),
+                purchase_price=h.get("purchase_price", 0),
+                purchase_date=datetime.now(),
+                current_price=h.get("current_price", 0),
+                current_value=h.get("market_value", 0),
+                weight=h.get("weight", 0)
+            )
+        
+        mock_context.content = PortfolioContextContent(
+            portfolio_id="test_portfolio",
+            user_id="test_user",
+            name="Test Portfolio",
+            total_value=sample_portfolio_data["portfolio_summary"]["total_value"],
+            cash_value=sample_portfolio_data["portfolio_summary"]["cash_balance"],
+            holdings=holdings_dict
+        )
         
         yield agent
 
@@ -134,7 +157,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_portfolio_data(self, mock_agent, sample_portfolio_data):
         """Test the get_portfolio_data tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_portfolio_data")
-        result = tool.run({})
+        result = tool.run()
         
         # Check that the result is a string containing portfolio information
         assert isinstance(result, str)
@@ -144,7 +167,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_holdings(self, mock_agent, sample_portfolio_data):
         """Test the get_holdings tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_holdings")
-        result = tool.run({})
+        result = tool.run()
         
         # Check that the result contains the expected holdings
         assert isinstance(result, str)
@@ -158,7 +181,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_asset_allocation(self, mock_agent, sample_portfolio_data):
         """Test the get_asset_allocation tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_asset_allocation")
-        result = tool.run({})
+        result = tool.run()
         
         # Check that the result contains asset allocation information
         assert isinstance(result, str)
@@ -174,7 +197,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_sector_allocation(self, mock_agent, sample_portfolio_data):
         """Test the get_sector_allocation tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_sector_allocation")
-        result = tool.run({})
+        result = tool.run()
         
         # Check that the result contains sector allocation information
         assert isinstance(result, str)
@@ -189,7 +212,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_performance(self, mock_agent, sample_portfolio_data):
         """Test the get_performance tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_performance")
-        result = tool.run({})
+        result = tool.run()
         
         # Check that the result contains performance metrics
         assert isinstance(result, str)
@@ -204,7 +227,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_risk_metrics(self, mock_agent, sample_portfolio_data):
         """Test the get_risk_metrics tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_risk_metrics")
-        result = tool.run({})
+        result = tool.run()
         
         # Check that the result contains risk metrics
         assert isinstance(result, str)
@@ -220,7 +243,7 @@ class TestPortfolioAnalyzerAgent:
     def test_analyze_portfolio(self, mock_agent):
         """Test the analyze_portfolio tool."""
         tool = next(t for t in mock_agent.tools if t.name == "analyze_portfolio")
-        result = tool.run({})
+        result = tool.run()
         
         # Check that the result is a comprehensive analysis
         assert isinstance(result, str)
@@ -233,7 +256,7 @@ class TestPortfolioAnalyzerAgent:
         """Test the generate_visualizations tool."""
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "generate_visualizations")
-        result = tool.run({})
+        result = tool.run()
         
         # Check that the visualizer was called
         mock_agent.visualizer.generate_asset_allocation_chart.assert_called_once()
@@ -250,6 +273,7 @@ class TestPortfolioAnalyzerAgent:
     def test_run_method(self, mock_chat_ollama, mock_agent):
         """Test the run method processes queries correctly."""
         # Setup the mock executor to return a response
+        mock_agent.agent_executor = MagicMock()
         mock_agent.agent_executor.invoke.return_value = {"output": "Portfolio analysis complete"}
         
         # Call the run method

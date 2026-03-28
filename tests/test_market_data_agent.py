@@ -6,6 +6,8 @@ import sys
 import json
 import pytest
 from unittest.mock import patch, MagicMock, mock_open
+from datetime import datetime
+from contexts.market_context import MarketContextContent, MarketIndices, MarketSentiment, AssetData, AssetType
 
 # Add the parent directory to the path so we can import the agents
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -136,32 +138,46 @@ def mock_agent(sample_market_data):
          patch("builtins.open", mock_open(read_data=json.dumps(sample_market_data))), \
          patch("json.load", return_value=sample_market_data), \
          patch("agents.market_data_agent.ChatOllama") as mock_chat, \
-         patch("agents.market_data_agent.YFinanceClient") as mock_yfin:
+         patch("agents.market_data_agent.FinancialDataClient") as mock_fin_client:
         
         # Mock registry
         mock_registry = MagicMock()
         mock_get_registry.return_value = mock_registry
         
-        # Set up mock for YFinance client
-        mock_yfin_instance = MagicMock()
-        mock_yfin.return_value = mock_yfin_instance
-        mock_yfin_instance.get_ticker_data.return_value = {
-            "AAPL": {
-                "name": "Apple Inc.",
-                "price": 171.50,
-                "change": 2.35,
-                "change_percent": 1.39,
-                "volume": 58425632,
-                "market_cap": 2650000000000,
-                "pe_ratio": 28.5,
-                "dividend_yield": 0.52
-            }
-        }
+        # Set up mock for Financial Data client
+        mock_client_instance = MagicMock()
+        mock_fin_client.return_value = mock_client_instance
+        
+        # Create a mock AssetData object for get_asset_data
+        from contexts.market_context import AssetData, AssetType
+        from datetime import datetime
+        
+        mock_asset = MagicMock(spec=AssetData)
+        mock_asset.name = "Apple Inc."
+        mock_asset.symbol = "AAPL"
+        mock_asset.current_price = 171.50
+        mock_asset.change_amount = 2.35
+        mock_asset.change_percentage = 1.39
+        mock_asset.volume = 58425632
+        mock_asset.market_cap = 2650000000000
+        mock_asset.asset_type = AssetType.STOCK
+        mock_asset.last_updated = datetime.now()
+        
+        mock_client_instance.get_asset_data.return_value = mock_asset
         
         # Set up the agent context
         mock_context = MagicMock()
         mock_registry.get_latest_context.return_value = mock_context
-        mock_context.content = sample_market_data
+        
+        # Create a real MarketContextContent object to avoid AttributeErrors
+        # Clean up sample data to match model
+        content_data = sample_market_data.copy()
+        if "market_status" in content_data:
+            content_data["market_open"] = content_data["market_status"] == "open"
+            del content_data["market_status"]
+        
+        # Ensure indices and sentiment are objects or correctly structured dicts
+        mock_context.content = MarketContextContent(**content_data)
         
         # Create the agent with mocked dependencies
         agent = MarketDataAgent()

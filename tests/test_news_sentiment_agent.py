@@ -11,6 +11,7 @@ from unittest.mock import patch, MagicMock
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from agents.news_sentiment_agent import NewsSentimentAgent
+from contexts.news_context import NewsContextContent
 
 
 @pytest.fixture
@@ -32,6 +33,7 @@ def mock_agent():
         # Mock context to return sample data
         mock_context = MagicMock()
         mock_registry.get_latest_context.return_value = mock_context
+        mock_context.content = NewsContextContent()
         
         # Mock news client
         mock_news_client = MagicMock()
@@ -69,7 +71,7 @@ class TestNewsSentimentAgent:
         
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "fetch_latest_news")
-        result = tool.run({"query": "tesla", "category": "company", "max_results": 1})
+        result = tool.run(query="tesla", category="company", max_results=1)
         
         # Verify the news client was called
         mock_agent.news_client.get_news_for_query.assert_called_once_with(
@@ -87,7 +89,7 @@ class TestNewsSentimentAgent:
         
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "analyze_news_sentiment")
-        result = tool.run({"text": "Tesla announced record quarterly earnings today."})
+        result = tool.run(text="Tesla announced record quarterly earnings today.")
         
         # Verify the sentiment analyzer was called
         mock_agent.sentiment_analyzer.assert_called_once()
@@ -116,6 +118,7 @@ class TestNewsSentimentAgent:
     def test_run_method(self, mock_chat_ollama, mock_agent):
         """Test the run method processes queries correctly."""
         # Setup the mock executor to return a response
+        mock_agent.agent_executor = MagicMock()
         mock_agent.agent_executor.invoke.return_value = {"output": "News sentiment analysis completed"}
         
         # Call the run method
