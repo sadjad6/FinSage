@@ -57,8 +57,8 @@ class TestFinancialPlannerAgent:
     
     def test_get_user_profile(self, mock_agent, sample_user_profile):
         """Test the get_user_profile tool."""
-        # Setup the mock context to return the sample profile
-        mock_agent.user_profile_context.content = sample_user_profile
+        from contexts.user_profile_context import UserProfileContent
+        mock_agent.user_profile_context.content = UserProfileContent(**sample_user_profile)
         
         # Call the tool
         result = mock_agent.tools[0].func()
@@ -96,15 +96,16 @@ class TestFinancialPlannerAgent:
     @patch("agents.financial_planner_agent.ChatOllama")
     def test_run_method(self, mock_chat_ollama, mock_agent):
         """Test the run method processes queries correctly."""
-        # Setup the mock executor to return a response
-        mock_agent.agent_executor.run.return_value = "Test financial advice"
+        # Cleanly mock the executor to avoid AttributeError
+        mock_agent.agent_executor = MagicMock()
+        mock_agent.agent_executor.invoke.return_value = {"output": "Test financial advice"}
         
         # Call the run method
         result = mock_agent.run("What should I invest in?")
         
         # Verify the executor was called with the query
-        mock_agent.agent_executor.run.assert_called_once_with(
-            input="What should I invest in?"
+        mock_agent.agent_executor.invoke.assert_called_once_with(
+            {"input": "What should I invest in?"}
         )
         
         # Verify the result is what we expect

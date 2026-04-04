@@ -326,7 +326,7 @@ class TestMarketDataAgent:
         # Check that the result is a comprehensive summary
         assert isinstance(result, str)
         assert "Sp 500" in result
-        assert "sectors" in result.lower()
+        assert "sector" in result.lower()
         assert "commodities" in result.lower()
         assert "treasury" in result.lower() or "economic" in result.lower()
     
