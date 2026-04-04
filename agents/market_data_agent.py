@@ -152,14 +152,14 @@ class MarketDataAgent:
         @tool("get_market_summary")
         def get_market_summary() -> str:
             """Get a comprehensive summary of current market conditions."""
-            indices = get_market_indices()
-            sectors = get_sector_performance()
+            indices = get_market_indices.invoke({})
+            sectors = get_sector_performance.invoke({})
             return f"{indices}\n\n{sectors}"
 
         @tool("update_market_data")
         def update_market_data() -> str:
             """Update the internal market database with the latest data."""
-            return update_market_context()
+            return update_market_context.invoke({})
 
         @tool("fetch_asset_data")
         def fetch_asset_data(symbol: str, asset_type: Optional[str] = None) -> str:
