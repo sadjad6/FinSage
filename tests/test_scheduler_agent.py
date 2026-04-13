@@ -121,7 +121,7 @@ class TestSchedulerAgent:
         
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "cancel_scheduled_task")
-        result = tool.run({"task_id": "test_job"})
+        result = tool.invoke({"task_id": "test_job"})
         
         # Verify the job was removed
         assert len(mock_agent.scheduler.get_jobs()) == 0
@@ -136,7 +136,7 @@ class TestSchedulerAgent:
         with patch.object(mock_agent.scheduler, 'start') as mock_start:
             # Call the tool
             tool = next(t for t in mock_agent.tools if t.name == "start_scheduler")
-            result = tool.run({})
+            result = tool.invoke({})
             
             # Verify the scheduler was started
             mock_start.assert_called_once()
@@ -156,7 +156,7 @@ class TestSchedulerAgent:
         with patch.object(mock_agent.scheduler, 'shutdown') as mock_shutdown:
             # Call the tool
             tool = next(t for t in mock_agent.tools if t.name == "stop_scheduler")
-            result = tool.run({})
+            result = tool.invoke({})
             
             # Verify the scheduler was stopped
             mock_shutdown.assert_called_once()
@@ -171,7 +171,7 @@ class TestSchedulerAgent:
         """Test the generate_daily_summary tool."""
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "generate_daily_summary")
-        result = tool.run({})
+        result = tool.invoke({})
         
         # Verify each agent was called
         mock_agents["market_data_agent"].run.assert_called_once()
@@ -188,6 +188,7 @@ class TestSchedulerAgent:
     def test_run_method(self, mock_chat_ollama, mock_agent):
         """Test the run method processes queries correctly."""
         # Setup the mock executor to return a response
+        mock_agent.agent_executor = MagicMock()
         mock_agent.agent_executor.invoke.return_value = {"output": "Task scheduled successfully"}
         
         # Call the run method

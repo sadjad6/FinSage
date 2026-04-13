@@ -71,7 +71,7 @@ class TestNewsSentimentAgent:
         
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "fetch_latest_news")
-        result = tool.run(query="tesla", category="company", max_results=1)
+        result = tool.invoke({"query": "tesla", "category": "company", "max_results": 1})
         
         # Verify the news client was called
         mock_agent.news_client.get_news_for_query.assert_called_once_with(
@@ -89,7 +89,7 @@ class TestNewsSentimentAgent:
         
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "analyze_news_sentiment")
-        result = tool.run(text="Tesla announced record quarterly earnings today.")
+        result = tool.invoke({"text": "Tesla announced record quarterly earnings today."})
         
         # Verify the sentiment analyzer was called
         mock_agent.sentiment_analyzer.assert_called_once()
@@ -105,7 +105,7 @@ class TestNewsSentimentAgent:
         
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "get_market_sentiment_summary")
-        result = tool.run({})
+        result = tool.invoke({})
         
         # Verify the context was accessed
         mock_agent.news_context.get.assert_called_once()

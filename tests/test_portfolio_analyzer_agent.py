@@ -157,7 +157,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_portfolio_data(self, mock_agent, sample_portfolio_data):
         """Test the get_portfolio_data tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_portfolio_data")
-        result = tool.run()
+        result = tool.invoke({})
         
         # Check that the result is a string containing portfolio information
         assert isinstance(result, str)
@@ -167,7 +167,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_holdings(self, mock_agent, sample_portfolio_data):
         """Test the get_holdings tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_holdings")
-        result = tool.run()
+        result = tool.invoke({})
         
         # Check that the result contains the expected holdings
         assert isinstance(result, str)
@@ -181,7 +181,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_asset_allocation(self, mock_agent, sample_portfolio_data):
         """Test the get_asset_allocation tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_asset_allocation")
-        result = tool.run()
+        result = tool.invoke({})
         
         # Check that the result contains asset allocation information
         assert isinstance(result, str)
@@ -197,7 +197,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_sector_allocation(self, mock_agent, sample_portfolio_data):
         """Test the get_sector_allocation tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_sector_allocation")
-        result = tool.run()
+        result = tool.invoke({})
         
         # Check that the result contains sector allocation information
         assert isinstance(result, str)
@@ -212,7 +212,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_performance(self, mock_agent, sample_portfolio_data):
         """Test the get_performance tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_performance")
-        result = tool.run()
+        result = tool.invoke({})
         
         # Check that the result contains performance metrics
         assert isinstance(result, str)
@@ -227,7 +227,7 @@ class TestPortfolioAnalyzerAgent:
     def test_get_risk_metrics(self, mock_agent, sample_portfolio_data):
         """Test the get_risk_metrics tool."""
         tool = next(t for t in mock_agent.tools if t.name == "get_risk_metrics")
-        result = tool.run()
+        result = tool.invoke({})
         
         # Check that the result contains risk metrics
         assert isinstance(result, str)
@@ -243,7 +243,7 @@ class TestPortfolioAnalyzerAgent:
     def test_analyze_portfolio(self, mock_agent):
         """Test the analyze_portfolio tool."""
         tool = next(t for t in mock_agent.tools if t.name == "analyze_portfolio")
-        result = tool.run()
+        result = tool.invoke({})
         
         # Check that the result is a comprehensive analysis
         assert isinstance(result, str)
@@ -256,7 +256,7 @@ class TestPortfolioAnalyzerAgent:
         """Test the generate_visualizations tool."""
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "generate_visualizations")
-        result = tool.run()
+        result = tool.invoke({})
         
         # Check that the visualizer was called
         mock_agent.visualizer.generate_asset_allocation_chart.assert_called_once()

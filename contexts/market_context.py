@@ -50,6 +50,8 @@ class AssetData(BaseModel):
 
 class MarketIndices(BaseModel):
     """Structure for major market indices"""
+    data: List[Dict[str, Any]] = Field(default_factory=list)
+    
     sp500: Optional[float] = None
     dow_jones: Optional[float] = None
     nasdaq: Optional[float] = None
