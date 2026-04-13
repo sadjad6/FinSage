@@ -59,7 +59,7 @@ class MarketDataAgent:
                 context_type="market_context",
                 creator_agent=self.agent_name,
                 content_model=MarketContextContent,
-                content_data=context_content.dict()
+                content_data=context_content.model_dump()
             )
             
             # Register the new context

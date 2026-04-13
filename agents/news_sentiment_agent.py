@@ -84,7 +84,7 @@ class NewsSentimentAgent:
                 context_type="news_context",
                 creator_agent=self.agent_name,
                 content_model=NewsContextContent,
-                content_data=context_content.dict()
+                content_data=context_content.model_dump()
             )
             
             # Register the new context
@@ -292,12 +292,18 @@ class NewsSentimentAgent:
                     elif article.get("description"):
                         sentiment_data = self.analyze_sentiment(article["description"])
                     
+                    source = article.get("source", {})
+                    if isinstance(source, dict):
+                        source_name = source.get("name", "Unknown")
+                    else:
+                        source_name = str(source)
+                    
                     # Create article object for context
                     news_article = NewsArticle(
                         article_id=article_id,
                         title=article.get("title", "No Title"),
                         url=article.get("url", ""),
-                        source=article.get("source", {}).get("name", "Unknown"),
+                        source=source_name,
                         published_at=article.get("publishedAt", datetime.now().isoformat()),
                         category=category,
                         content=article.get("content", ""),
@@ -311,7 +317,6 @@ class NewsSentimentAgent:
                     self.news_context.content.articles[article_id] = news_article
                     
                     # Format for report
-                    source = article.get("source", {}).get("name", "Unknown Source")
                     published_at = article.get("publishedAt", "")
                     
                     if published_at:
@@ -765,7 +770,7 @@ class NewsSentimentAgent:
             # Update the context in the registry
             self.news_context.update(
                 updated_by=self.agent_name,
-                content_updates=self.news_context.content.dict()
+                content_updates=self.news_context.content.model_dump()
             )
             
             registry = get_registry()
