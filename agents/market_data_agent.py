@@ -79,8 +79,14 @@ class MarketDataAgent:
                 return "No market indices data available."
             
             report = ["## Market Indices", ""]
-            for index in indices:
-                report.append(f"- {index.name} ({index.symbol}): {index.price:.2f} ({index.change:+.2f}, {index.change_percent:+.2f}%)")
+            for index_data in indices.data:
+                # Handle both dict and object-like access if needed, but indices.data is a list of dicts or objects
+                name = index_data.get('name', 'Unknown')
+                symbol = index_data.get('symbol', 'Unknown')
+                price = index_data.get('price', 0.0)
+                change = index_data.get('change', 0.0)
+                change_percent = index_data.get('change_percent', 0.0)
+                report.append(f"- {name} ({symbol}): {price:.2f} ({change:+.2f}, {change_percent:+.2f}%)")
             return "\n".join(report)
 
         @tool("get_sector_performance")
@@ -103,7 +109,7 @@ class MarketDataAgent:
             if not commodities:
                 return "No commodity pricing data available."
             
-            report = ["## Commodity Prices", ""]
+            report = ["## Commodities", ""]
             report.append("- Crude Oil: 72.45")
             report.append("- Gold: 2350.25")
             return "\n".join(report)
@@ -154,7 +160,9 @@ class MarketDataAgent:
             """Get a comprehensive summary of current market conditions."""
             indices = get_market_indices.invoke({})
             sectors = get_sector_performance.invoke({})
-            return f"{indices}\n\n{sectors}"
+            commodities = get_commodity_prices.invoke({})
+            indicators = get_economic_indicators.invoke({})
+            return f"{indices}\n\n{sectors}\n\n{commodities}\n\n{indicators}"
 
         @tool("update_market_data")
         def update_market_data() -> str:

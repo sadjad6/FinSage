@@ -20,32 +20,34 @@ def sample_market_data():
     """Fixture to provide sample market data for testing."""
     return {
         "timestamp": "2025-06-01T16:00:00.000Z",
-        "indices": [
-            {
-                "name": "S&P 500",
-                "symbol": "^GSPC",
-                "price": 5420.25,
-                "change": 32.45,
-                "change_percent": 0.60,
-                "prev_close": 5387.80
-            },
-            {
-                "name": "Dow Jones",
-                "symbol": "^DJI",
-                "price": 41250.75,
-                "change": 150.35,
-                "change_percent": 0.37,
-                "prev_close": 41100.40
-            },
-            {
-                "name": "NASDAQ",
-                "symbol": "^IXIC",
-                "price": 17345.65,
-                "change": 95.25,
-                "change_percent": 0.55,
-                "prev_close": 17250.40
-            }
-        ],
+        "indices": {
+            "data": [
+                {
+                    "name": "S&P 500",
+                    "symbol": "^GSPC",
+                    "price": 5420.25,
+                    "change": 32.45,
+                    "change_percent": 0.60,
+                    "prev_close": 5387.80
+                },
+                {
+                    "name": "Dow Jones",
+                    "symbol": "^DJI",
+                    "price": 41250.75,
+                    "change": 150.35,
+                    "change_percent": 0.37,
+                    "prev_close": 41100.40
+                },
+                {
+                    "name": "NASDAQ",
+                    "symbol": "^IXIC",
+                    "price": 17345.65,
+                    "change": 95.25,
+                    "change_percent": 0.55,
+                    "prev_close": 17250.40
+                }
+            ]
+        },
         "sectors": [
             {
                 "name": "Technology",
@@ -183,14 +185,15 @@ def mock_agent(sample_market_data):
             content_data["market_open"] = content_data["market_status"] == "open"
             del content_data["market_status"]
         
-        # Convert indices list to a single MarketIndices object
-        if isinstance(content_data.get("indices"), list) and content_data["indices"]:
-            # Use the first index as the primary, or aggregate as needed
-            content_data["indices"] = MarketIndices(**content_data["indices"][0])
+        # Ensure indices is properly structured
+        if isinstance(content_data.get("indices"), list):
+            content_data["indices"] = {"data": content_data["indices"]}
         
         # Ensure sentiment is properly structured if it's a list
         if isinstance(content_data.get("sentiment"), list) and content_data["sentiment"]:
             content_data["sentiment"] = MarketSentiment(**content_data["sentiment"][0])
+        elif isinstance(content_data.get("sentiment"), dict):
+             content_data["sentiment"] = MarketSentiment(**content_data["sentiment"])
 
         class MockContent(MarketContextContent):
             model_config = {"extra": "allow"}
