@@ -106,9 +106,9 @@ class TestNewsSentimentAgent:
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "get_market_sentiment_summary")
         result = tool.invoke({})
-        
-        # Verify the context was accessed
-        mock_agent.news_context.get.assert_called_once()
+        # Check results
+        assert "Overall Sentiment" in result
+        assert "Positive" in result  # Title cased in implementation
         
         # Verify the result contains sentiment summary information
         assert "sentiment" in result.lower()

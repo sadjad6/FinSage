@@ -76,7 +76,8 @@ class TestSchedulerAgent:
     def test_schedule_daily_update(self, mock_agent, mock_agents):
         """Test the schedule_daily_update tool."""
         # Call the tool
-        result = mock_agent._create_tools()[0](hour=16, minute=30)
+        tool = mock_agent._create_tools()[0]
+        result = tool.invoke({"hour": 16, "minute": 30})
         
         # Verify the scheduler was called
         assert len(mock_agent.scheduler.get_jobs()) > 0
@@ -98,7 +99,8 @@ class TestSchedulerAgent:
         )
         
         # Call the tool
-        result = mock_agent._create_tools()[1]()
+        tool = mock_agent._create_tools()[1]
+        result = tool.invoke({})
         
         # Verify the result includes the test job
         assert "Test Job" in result

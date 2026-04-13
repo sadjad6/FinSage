@@ -72,7 +72,7 @@ class FinancialPlannerAgent:
                 context_type="user_profile_context",
                 creator_agent=self.agent_name,
                 content_model=UserProfileContent,
-                content_data=context_content.dict()
+                content_data=context_content.model_dump()
             )
             
             # Register the new context
@@ -247,7 +247,7 @@ class FinancialPlannerAgent:
                     context_type="user_profile_context",
                     creator_agent=self.agent_name,
                     content_model=UserProfileContent,
-                    content_data=user_profile.dict()
+                    content_data=user_profile.model_dump()
                 )
                 
                 # Register the new context
