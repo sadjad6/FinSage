@@ -18,6 +18,7 @@ class AssetHolding(BaseModel):
     symbol: str
     name: str
     asset_type: AssetType
+    sector: Optional[str] = None
     quantity: float
     purchase_price: float
     purchase_date: datetime

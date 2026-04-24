@@ -42,6 +42,7 @@ def mock_agent():
         with patch("agents.news_sentiment_agent.NewsAPIClient", return_value=mock_news_client):
             with patch("agents.news_sentiment_agent.pipeline", return_value=MagicMock()):
                 agent = NewsSentimentAgent()
+                agent.sentiment_analyzer.return_value = [{"label": "neutral", "score": 0.5}]
                 
                 yield agent
 
@@ -101,13 +102,34 @@ class TestNewsSentimentAgent:
     def test_get_market_sentiment_summary(self, mock_agent, sample_news_data):
         """Test the get_market_sentiment_summary tool."""
         # Setup mock news context to return sample data
-        mock_agent.news_context.get.return_value = sample_news_data
+        from contexts.news_context import NewsArticle, CategorySentiment, SentimentAnalysis, SentimentLevel
+        mock_agent.news_context.content.overall_sentiment = sample_news_data.get('market_sentiment', 0.5)
+        for article_id, article_data in sample_news_data.get('articles', {}).items():
+            sentiment_obj = SentimentAnalysis(
+                sentiment=SentimentLevel(article_data.get('sentiment_label', 'neutral')),
+                sentiment_score=article_data.get('sentiment_score', 0.0)
+            )
+            
+            # Filter valid attributes for NewsArticle
+            valid_keys = NewsArticle.model_fields.keys()
+            filtered_data = {k: v for k, v in article_data.items() if k in valid_keys}
+            
+            # Map categories from category if present
+            if 'category' in article_data and 'categories' not in filtered_data:
+                filtered_data['categories'] = [article_data['category']]
+                
+            article = NewsArticle(**filtered_data)
+            article.sentiment = sentiment_obj
+            mock_agent.news_context.content.articles[article_id] = article
+            
+        for cat, cat_data in sample_news_data.get('category_sentiments', {}).items():
+            mock_agent.news_context.content.category_sentiment[cat] = CategorySentiment(**cat_data)
         
         # Call the tool
         tool = next(t for t in mock_agent.tools if t.name == "get_market_sentiment_summary")
         result = tool.invoke({})
         # Check results
-        assert "Overall Sentiment" in result
+        assert "Overall Market Sentiment" in result
         assert "Positive" in result  # Title cased in implementation
         
         # Verify the result contains sentiment summary information

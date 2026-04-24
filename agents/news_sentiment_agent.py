@@ -298,18 +298,21 @@ class NewsSentimentAgent:
                     else:
                         source_name = str(source)
                     
+                    from contexts.news_context import SentimentAnalysis, SentimentLevel
                     # Create article object for context
                     news_article = NewsArticle(
                         article_id=article_id,
-                        title=article.get("title", "No Title"),
-                        url=article.get("url", ""),
+                        title=article.get("title", "No Title") or "No Title",
+                        url=article.get("url") or "https://example.com",
                         source=source_name,
                         published_at=article.get("publishedAt", datetime.now().isoformat()),
-                        category=category,
+                        categories=[category] if category else [],
                         content=article.get("content", ""),
-                        description=article.get("description", ""),
-                        sentiment_score=sentiment_data["sentiment_score"],
-                        sentiment_label=sentiment_data["sentiment_label"],
+                        summary=article.get("description", ""),
+                        sentiment=SentimentAnalysis(
+                            sentiment=SentimentLevel(sentiment_data["sentiment_label"]),
+                            sentiment_score=sentiment_data["sentiment_score"]
+                        ),
                         tickers=[]  # Will be updated later
                     )
                     
@@ -437,26 +440,31 @@ class NewsSentimentAgent:
                     return "No news articles available for sentiment analysis. Try fetching latest news first."
                 
                 # Calculate overall market sentiment
-                sentiment_scores = [article.sentiment_score for article in news_context.articles.values()]
+                sentiment_scores = [article.sentiment.sentiment_score for article in news_context.articles.values() if article.sentiment]
                 overall_sentiment = sum(sentiment_scores) / len(sentiment_scores) if sentiment_scores else 0
                 
                 # Get sentiment by category
                 category_sentiments = {}
                 for article in news_context.articles.values():
-                    category = article.category.lower() if article.category else "uncategorized"
-                    if category not in category_sentiments:
-                        category_sentiments[category] = []
-                    
-                    category_sentiments[category].append(article.sentiment_score)
+                    if not article.sentiment:
+                        continue
+                    cats = [c.lower() for c in article.categories] if article.categories else ["uncategorized"]
+                    for category in cats:
+                        if category not in category_sentiments:
+                            category_sentiments[category] = []
+                        
+                        category_sentiments[category].append(article.sentiment.sentiment_score)
                 
                 # Get sentiment by ticker if available
                 ticker_sentiments = {}
                 for article in news_context.articles.values():
+                    if not article.sentiment:
+                        continue
                     for ticker in article.tickers:
                         if ticker not in ticker_sentiments:
                             ticker_sentiments[ticker] = []
                         
-                        ticker_sentiments[ticker].append(article.sentiment_score)
+                        ticker_sentiments[ticker].append(article.sentiment.sentiment_score)
                 
                 # Format the report
                 report = ["## Market Sentiment Summary", ""]
@@ -591,17 +599,20 @@ class NewsSentimentAgent:
                     # Create article object
                     article_id = f"{ticker}_{datetime.now().strftime('%Y%m%d%H%M%S')}_{len(ticker_articles)}"
                     
+                    from contexts.news_context import SentimentAnalysis, SentimentLevel
                     news_article = NewsArticle(
                         article_id=article_id,
-                        title=article.get("title", "No Title"),
-                        url=article.get("url", ""),
+                        title=article.get("title", "No Title") or "No Title",
+                        url=article.get("url") or "https://example.com",
                         source=article.get("source", {}).get("name", "Unknown"),
                         published_at=article.get("publishedAt", datetime.now().isoformat()),
-                        category="company",
+                        categories=["company"],
                         content=article.get("content", ""),
-                        description=article.get("description", ""),
-                        sentiment_score=sentiment_data["sentiment_score"],
-                        sentiment_label=sentiment_data["sentiment_label"],
+                        summary=article.get("description", ""),
+                        sentiment=SentimentAnalysis(
+                            sentiment=SentimentLevel(sentiment_data["sentiment_label"]),
+                            sentiment_score=sentiment_data["sentiment_score"]
+                        ),
                         tickers=[ticker]
                     )
                     
@@ -611,7 +622,7 @@ class NewsSentimentAgent:
                     self.news_context.content.articles[article_id] = news_article
                 
                 # Calculate average sentiment
-                sentiment_scores = [article.sentiment_score for article in ticker_articles]
+                sentiment_scores = [article.sentiment.sentiment_score for article in ticker_articles if article.sentiment]
                 avg_sentiment = sum(sentiment_scores) / len(sentiment_scores) if sentiment_scores else 0
                 
                 # Determine sentiment label
@@ -635,14 +646,12 @@ class NewsSentimentAgent:
                 # Add ticker sentiment to news context
                 ticker_sentiment = TickerSentiment(
                     ticker=ticker,
-                    company_name=company_name,
-                    sentiment_score=avg_sentiment,
-                    sentiment_label=sentiment_label,
                     article_count=len(ticker_articles),
-                    last_updated=datetime.now()
+                    avg_sentiment_score=avg_sentiment,
+                    recent_articles=[a.article_id for a in ticker_articles]
                 )
                 
-                self.news_context.content.ticker_sentiments[ticker] = ticker_sentiment
+                self.news_context.content.ticker_sentiment[ticker] = ticker_sentiment
                 
                 # Top positive and negative articles
                 report.append("\n### Most Significant News")
@@ -650,18 +659,21 @@ class NewsSentimentAgent:
                 # Sort by absolute sentiment score to get most significant articles
                 significant_articles = sorted(
                     ticker_articles,
-                    key=lambda x: abs(x.sentiment_score),
+                    key=lambda x: abs(x.sentiment.sentiment_score) if x.sentiment else 0,
                     reverse=True
                 )[:5]
                 
                 for i, article in enumerate(significant_articles, 1):
                     sentiment_emoji = "🟡"  # neutral
-                    if article.sentiment_label == "positive":
+                    sentiment_label = article.sentiment.sentiment.value if article.sentiment else "neutral"
+                    sentiment_score = article.sentiment.sentiment_score if article.sentiment else 0.0
+                    
+                    if sentiment_label == "positive":
                         sentiment_emoji = "🟢"
-                    elif article.sentiment_label == "negative":
+                    elif sentiment_label == "negative":
                         sentiment_emoji = "🔴"
                     
-                    published_at = article.published_at
+                    published_at = str(article.published_at) if hasattr(article, "published_at") else ""
                     if published_at:
                         try:
                             published_date = datetime.fromisoformat(published_at.replace("Z", "+00:00"))
@@ -671,10 +683,10 @@ class NewsSentimentAgent:
                     
                     report.append(f"### {i}. {article.title} {sentiment_emoji}")
                     report.append(f"**Source**: {article.source} | **Date**: {published_at}")
-                    report.append(f"**Sentiment**: {article.sentiment_label.title()} ({article.sentiment_score:.2f})")
+                    report.append(f"**Sentiment**: {sentiment_label.title()} ({sentiment_score:.2f})")
                     
-                    if article.description:
-                        report.append(f"\n{article.description}")
+                    if article.summary:
+                        report.append(f"\n{article.summary}")
                     
                     report.append(f"\n[Read more]({article.url})\n")
                 
@@ -719,42 +731,31 @@ class NewsSentimentAgent:
         """Update the news context with the latest sentiment analysis"""
         try:
             # Calculate overall market sentiment
-            sentiment_scores = [article.sentiment_score for article in self.news_context.content.articles.values()]
-            self.news_context.content.market_sentiment = sum(sentiment_scores) / len(sentiment_scores) if sentiment_scores else 0
+            sentiment_scores = [article.sentiment.sentiment_score for article in self.news_context.content.articles.values() if article.sentiment]
+            self.news_context.content.overall_sentiment = sum(sentiment_scores) / len(sentiment_scores) if sentiment_scores else 0
             
             # Update category sentiments
             category_sentiments = {}
             for article in self.news_context.content.articles.values():
-                category = article.category.lower() if article.category else "uncategorized"
-                if category not in category_sentiments:
-                    category_sentiments[category] = []
-                
-                category_sentiments[category].append(article.sentiment_score)
+                if not article.sentiment:
+                    continue
+                cats = [c.lower() for c in article.categories] if article.categories else ["uncategorized"]
+                for category in cats:
+                    if category not in category_sentiments:
+                        category_sentiments[category] = []
+                    
+                    category_sentiments[category].append(article.sentiment.sentiment_score)
             
             for category, scores in category_sentiments.items():
                 avg_score = sum(scores) / len(scores) if scores else 0
-                sentiment_label = "neutral"
-                if avg_score > 0.2:
-                    sentiment_label = "positive"
-                elif avg_score < -0.2:
-                    sentiment_label = "negative"
                 
                 cat_sentiment = CategorySentiment(
                     category=category,
-                    sentiment_score=avg_score,
-                    sentiment_label=sentiment_label,
-                    article_count=len(scores),
-                    last_updated=datetime.now()
+                    avg_sentiment_score=avg_score,
+                    article_count=len(scores)
                 )
                 
-                self.news_context.content.category_sentiments[category] = cat_sentiment
-            
-            # Calculate sentiment trend
-            current_sentiment = self.news_context.content.market_sentiment
-            previous_sentiment = getattr(self.news_context.content, "previous_market_sentiment", current_sentiment)
-            
-            self.news_context.content.sentiment_trend = current_sentiment - previous_sentiment
-            self.news_context.content.previous_market_sentiment = current_sentiment
+                self.news_context.content.category_sentiment[category] = cat_sentiment
             
             # Remove old articles (keeping only last 100)
             if len(self.news_context.content.articles) > 100:
